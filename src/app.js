@@ -24,6 +24,7 @@ await connectDB();
 
 app.use('/admin', adminRouter);
 app.use('/doctor', doctorRouter);
+app.use('/appointment', appointmentRouter);
 
 app.use((err, req, res, next) => {
   if (err) {
