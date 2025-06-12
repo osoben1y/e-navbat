@@ -1,7 +1,12 @@
 import express from 'express';
-import { connectDB } from './db/index.js';
 import { config } from 'dotenv';
+import { connectDB } from './db/index.js';
 import cookieParser from 'cookie-parser';
+import adminRouter from './routes/admin.routes.js';
+import doctorRouter from './routes/doctor.routes.js';
+import graphRouter from './routes/graph.routes.js';
+import patientRouter from './routes/patient.routes.js';
+import appointmentRouter from './routes/appointment.routes.js';
 import logger from './utils/logger/logger.js';
 config();
 
@@ -25,6 +30,7 @@ await connectDB();
 app.use('/admin', adminRouter);
 app.use('/doctor', doctorRouter);
 app.use('/appointment', appointmentRouter);
+app.use('/graph', graphRouter);
 
 app.use((err, req, res, next) => {
   if (err) {
