@@ -29,8 +29,9 @@ await connectDB();
 
 app.use('/admin', adminRouter);
 app.use('/doctor', doctorRouter);
-app.use('/appointment', appointmentRouter);
 app.use('/graph', graphRouter);
+app.use('/patient', patientRouter);
+app.use('/appointment', appointmentRouter);
 
 app.use((err, req, res, next) => {
   if (err) {
@@ -42,4 +43,4 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.listen(PORT, logger.info(`Server running on ${PORT} port`));
+app.listen(PORT, logger.info(`server shu porta ishlayapti${PORT}`));

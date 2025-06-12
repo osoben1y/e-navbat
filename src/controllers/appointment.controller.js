@@ -5,13 +5,13 @@ import { catchError } from '../utils/error-response.js';
 export class AppointmentController {
   async createAppointment(req, res) {
     try {
-      const { error, value } = adminValidator(req.body);
+      const { error, value } = appointmentValidator(req.body);
       if (error) {
-        return catchError(400, error.message, res);
+        return catchError(400, error, res);
       }
       const appointment = await Appointment.create(value);
       return res.status(201).json({
-        statusCOde: 201,
+        statusCode: 201,
         message: 'success',
         data: appointment,
       });
@@ -20,14 +20,11 @@ export class AppointmentController {
     }
   }
 
-  async getAllAppointments(req, res) {
+  async getAllApointments(_, res) {
     try {
       const appointments = await Appointment.find()
         .populate('patientId')
         .populate('graphId');
-      if (!appointments.length) {
-        return catchError(404, 'Appointments not found', res);
-      }
       return res.status(200).json({
         statusCode: 200,
         message: 'success',
@@ -38,51 +35,65 @@ export class AppointmentController {
     }
   }
 
-  async getAllAppointmentById(req, res) {
+  async getAppointmentById(req, res) {
     try {
-      const data = await Appointment.findById(req.params.id);
-      if (!data) {
-        return catchError(404, 'Appointment not found', res);
-      }
+      const appointment = await AppointmentController.findAppointmentById(
+        req.params.id,
+        res
+      );
       return res.status(200).json({
         statusCode: 200,
         message: 'success',
-        data: data,
+        data: appointment,
       });
     } catch (error) {
       return catchError(500, error.message, res);
     }
   }
 
-  async updateAppointment(req, res) {
+  async updateAppointmentById(req, res) {
     try {
-      const data = await Appointment.findByIdAndUpdate(req.params.id, {
-        new: true,
-      });
-      if (!data) {
-        return catchError(404, 'Appointment not found', res);
-      }
+      const id = req.params.id;
+      await AppointmentController.findAppointmentById(id, res);
+      const updatedAppointment = await Appointment.findByIdAndUpdate(
+        id,
+        req.body,
+        { new: true }
+      );
       return res.status(200).json({
         statusCode: 200,
         message: 'success',
-        data: data,
+        data: updatedAppointment,
       });
     } catch (error) {
       return catchError(500, error.message, res);
     }
   }
 
-  async deleteAppointment(req, res) {
+  async deleteAppointmentById(req, res) {
     try {
-      const data = await Appointment.findByIdAndDelete(req.params.id);
-      if (!data) {
-        return catchError(404, 'Appointment not found', res);
-      }
+      const id = req.params.id;
+      await AppointmentController.findAppointmentById(id, res);
+      await Appointment.findByIdAndDelete(id);
       return res.status(200).json({
         statusCode: 200,
         message: 'success',
         data: {},
       });
+    } catch (error) {
+      return catchError(500, error.message, res);
+    }
+  }
+
+  static async findAppointmentById(id, res) {
+    try {
+      const appointment = await Appointment.findById(id)
+        .populate('patientId')
+        .populate('graphId');
+      if (!appointment) {
+        return catchError(404, 'Appointment not found', res);
+      }
+      return appointment;
     } catch (error) {
       return catchError(500, error.message, res);
     }
