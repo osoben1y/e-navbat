@@ -22,6 +22,10 @@ app.use(cookieParser());
 
 await connectDB();
 
+app.use('/admin', adminRouter);
+app.use('/doctor', doctorRouter);
+
+
 app.use((err, req, res, next) => {
   if (err) {
     return res
